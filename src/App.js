@@ -1,39 +1,36 @@
 
 class App extends Component {
-    constructor() {
-        super();
-        this.state = {
-            input: 'input'
-        }
-        this.handleInput = this.handleInput.bind(this);
-    }
-    handleInput({ target: { value } }) {
-        console.log(value);
-        this.setState({ input: value });
+    constructor(props) {
+        super(props);
     }
     render() {
+        let type = 'div';
+        let props = {
+            id: 'App',
+            style: {
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                alignContent: 'stretch'
+            }
+        };
+        let children = [
+            (new Header({
+                style: {
+                    borderRadius: '12px',
+                    margin: '8px',
+                    padding: '16px',
+                    width: 'calc(100% - 32px)'
+                }
+            })),
+            (this.toElement('h1', {}, ['APP'])),
+            (new Input({}))
+        ];
         return {
-            type: 'div',
-            props: {
-                style: { background: '#DEF', padding: '16px' }
-            },
-            children: [
-                Header,
-                'TEXT',
-                {
-                    type: 'p',
-                    props: {
-                        style: { margin: '8px' }
-                    },
-                    children: ['INNER TEXT']
-                },
-                'MORE TEXT',
-                ['TEXT', 'IN', 'AN', 'ARRAY'],
-                new Input({
-                    onKeyPress: this.handleInput,
-                    value: this.state.input
-                })
-            ]
+            type,
+            props,
+            children
         }
     }
 }

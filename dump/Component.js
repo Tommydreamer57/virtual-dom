@@ -9,23 +9,30 @@
 
 class Component {
     static addProps(element, props) {
-        for (let prop in props) {
-            if (typeof props[prop] === 'function') {
-                console.log(prop.toLowerCase())
-                console.log(props[prop]);
-                element[prop.toLowerCase()] = function (...args) { props[prop](...args) };
-                element.setAttribute(prop.toLowerCase(), function (...args) { props[prop](...args) });
-                element.addEventListener(prop.toLowerCase(), props[prop]);
-            }
-            else if (typeof props[prop] === 'object') {
-                for (let key in props[prop]) {
-                    element[prop][key] = props[prop][key];
+        setTimeout(() => {
+            for (let prop in props) {
+                if (typeof props[prop] === 'function') {
+                    console.log(prop.toLowerCase())
+                    console.log(props[prop]);
+                    let eventHandler = props[prop];
+                    // let eventHandler = console.log;
+                    element[prop.toLowerCase()] = eventHandler;
+                    element.setAttribute(prop.toLowerCase(), eventHandler);
+                    element.addEventListener(prop.toLowerCase(), eventHandler);
+                    ({ element }).element[prop.toLowerCase()] = eventHandler;
+                    console.log({ element });
+                    console.log(document.querySelector(element.tagName)[prop.toLowerCase()] = eventHandler);
+                }
+                else if (typeof props[prop] === 'object') {
+                    for (let key in props[prop]) {
+                        element[prop][key] = props[prop][key];
+                    }
+                }
+                else {
+                    element.setAttribute(prop, props[prop]);
                 }
             }
-            else {
-                element.setAttribute(prop, props[prop]);
-            }
-        }
+        }, 0)
         return element;
     }
     static createComponent(Comp) {
