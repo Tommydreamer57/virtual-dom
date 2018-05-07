@@ -23,48 +23,58 @@ class VirtualDOM {
     addProps($el, props) {
         if (!$el.key) $el.id = this.getNewKey();
         for (let prop in props) {
+            // ADD EVENT LISTENERS - ADDEVENTLISTENER
             if (typeof props[prop] === 'function') {
-                // ADD EVENT LISTENERS SOMEHOW
-                // $el[prop] = props[prop];
                 setTimeout(() => {
-                    let $mountedElement = document.querySelector(`#${$el.id}`);
+                    let $mountedElement = document.getElementById($el.id);
+                    console.log("$ELEMENT & $MOUNTEDELEMENT");
+                    console.log({ $el });
+                    console.log({ $mountedElement });
                     let event = prop.toLowerCase().replace(/on/, '');
                     let eventListener = props[prop];
                     $mountedElement.addEventListener(event, eventListener);
                 }, 0);
             }
+            // ADD STYLE PROPS DIRECTLY TO ELEMENT
             else if (typeof props[prop] === 'object') {
                 for (let key in props[prop]) {
-                    // ADD STYLE PROPS DIRECTLY TO ELEMENT
                     $el[prop][key] = props[prop][key];
                 }
             }
+            // ADD NORMAL PROPS - SETATTRIBUTE
             else {
-                // USE SETATTRIBUTE FOR NORMAL PROPS
                 $el.setAttribute(prop, props[prop]);
             }
         }
         return $el;
     }
-    createElement(node) {
-        // RENDER UNRENDERED COMPONENTS
-        if (node instanceof Component) {
-            if (!node.VD) {
-                Object.defineProperty(node, 'VD', {
-                    get: () => this,
-                    set: () => { throw new Error('cannot change VD') }
-                });
-            }
-            node = node.render();
+    renderComponent(component) {
+        if (!component.VD) {
+            Object.defineProperty(component, 'VD', {
+                get: () => this,
+                set: () => { throw new Error('cannot change VD') }
+            });
         }
+        return component.render();
+    }
+    createElement(node, originalNode) {
+        console.log("CREATE NODE");
+        console.log(node);
+        // IF NO NODE GIVEN
+        if (node === undefined) return undefined;
+        // RENDER UNRENDERED COMPONENTS
+        if (node instanceof Component) node = this.renderComponent(node);
+        // ADD ID FROM ORIGINAL NODE
+        if (node && originalNode && originalNode.id) node.id = originalNode.id;
         // CREATE TEXT NODES
         if (typeof node === 'string') return document.createTextNode(node);
         // CREATE NODE & CHILDREN
         else {
-            console.log(node);
             let $el = document.createElement(node.type);
             $el = this.addProps($el, node.props);
-            node.children.map(this.createElement).forEach($el.appendChild.bind($el));
+            // console.log("NODE CHILDREN");
+            // console.log(node.children);
+            if (node.children) [...node.children].map(this.createElement).forEach($el.appendChild.bind($el));
             return $el;
         }
     }
@@ -77,6 +87,10 @@ class VirtualDOM {
         );
     }
     update($parent, newNode, oldNode, index = -1) {
+        console.log("UPDATE ARGUMENTS");
+        console.log({$parent});
+        console.log({newNode});
+        console.log({oldNode});
         // IF NO OLD NODE, INSERT NEW NODE
         if (!oldNode && newNode) $parent.appendChild(this.createElement(newNode));
         // IF NO NEW NODE, REMOVE OLD NODE
@@ -91,6 +105,7 @@ class VirtualDOM {
         }
     }
     mount($root) {
+        this.$root = $root;
         $root.appendChild(this.tree);
     }
 }

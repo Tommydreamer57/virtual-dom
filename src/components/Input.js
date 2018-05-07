@@ -2,15 +2,25 @@
 class Input extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            value: 'input'
+        };
         this.onKeyDown = this.onKeyDown.bind(this);
+        this.onPaste = this.onPaste.bind(this);
+        this.onInput = this.onInput.bind(this);
     }
     onKeyDown({ target: { value }, key }) {
-        let input = value + key;
-        // console.log(input);
-        this.setState({ input });
+        this.setState({ value });
+    }
+    onPaste({ target: { value } }) {
+        this.setState({ value });
+    }
+    onInput({ target: { value } }) {
+        this.setState({ value });
     }
     render() {
-        let { onKeyDown } = this;
-        return this.toElement('input', { onKeyDown }, []);
+        let { onKeyDown, onPaste, onInput } = this;
+        let { value } = this.state;
+        return this.toElement('input', { onKeyDown, onPaste, onInput, value }, []);
     }
 }

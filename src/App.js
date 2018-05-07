@@ -2,12 +2,23 @@
 class App extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            color: '#088'
+        };
+        this.onClick = this.onClick.bind(this);
+    }
+    onClick() {
+        let color = this.state.color === '#088' ? '#808' : '#088';
+        console.log(color);
+        this.setState({ color });
     }
     render() {
+        let { onClick } = this;
         let type = 'div';
         let props = {
             id: 'App',
             style: {
+                color: this.state.color,
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
@@ -25,12 +36,17 @@ class App extends Component {
                 }
             })),
             (this.toElement('h1', {}, ['APP'])),
-            (new Input({}))
+            (new Input({})),
+            (new Button({ onClick }))
         ];
         return {
             type,
             props,
+            // children: [
+            //     (new Border({
             children
-        }
+            //     }))
+            // ]
+        };
     }
 }
